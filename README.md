@@ -7,13 +7,16 @@ $p_{b, t} = p_{b, t-1} + (p_{nb} \cdot Max[(p_{b, t-1}-p_{n, t-1}), 0] \cdot p_{
 
 $p_{n, t} = p_{n, t-1} + (p_{bn} \cdot Max[(p_{n, t-1}-p_{b, t-1}), 0] \cdot p_{b, t-1}) - (p_{nb} \cdot Max[(p_{b, t-1}-p_{n, t-1}), 0] \cdot p_{n, t-1})$ 
 
+$p_{neutral, t} = 1 - p_{b, t} - p_{n, t}$
+
 ## Description
 
-Right now, outputs a single random undirected graph using NetworkX at 4 different time w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
+CURRENT: outputs a single random undirected graph using NetworkX at different time steps w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
+Also generates a random spanning tree and performs random walk on spanning tree if graph is connected & outputs random walker efficiency metrics. <br>
 Next steps?? <br>
-- implementing random walker w/ random walker's efficiency
-- dropdowns for changing seed which essentially changes network topology - seed is for reproducibility of random experiments
+- Fix initial graph to be connected.
 - changing initial proportion values
+- dropdowns for changing seed which essentially changes network topology - seed is for reproducibility of random experiments
 - changing rate
 
 ## References
