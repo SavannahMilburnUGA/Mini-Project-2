@@ -2,7 +2,7 @@
 Extension of Mini Project 1. People are nodes and a link is a spatial/virtual connection between 2 people. 
 Information can only spread on links. 
 
-**Dynamic Model Equations:** \n
+**Dynamic Model Equations:** <br>
 $p_{b, t} = p_{b, t-1} + (p_{nb} \cdot Max[(p_{b, t-1}-p_{n, t-1}), 0] \cdot p_{n, t-1}) - (p_{bn} \cdot Max[(p_{n, t-1}-p_{b, t-1}), 0] \cdot p_{b, t-1})$
 
 $p_{n, t} = p_{n, t-1} + (p_{bn} \cdot Max[(p_{n, t-1}-p_{b, t-1}), 0] \cdot p_{b, t-1}) - (p_{nb} \cdot Max[(p_{b, t-1}-p_{n, t-1}), 0] \cdot p_{n, t-1})$ 
