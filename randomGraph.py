@@ -427,7 +427,7 @@ def print_walker_efficiency_report(coverage_stats):  # <- This line should start
 # Example usage demonstrating spatial information spread
 if __name__ == "__main__":
     print("=== Spatial Information Spread Model with Random Walker ===")
-    print("Modeling how spatial proximity affects information propagation\n")
+    print("Modeling spatial influence on dynamics of info spread\n")
     
     # Create spatial network
     n_nodes = getUserInput()
