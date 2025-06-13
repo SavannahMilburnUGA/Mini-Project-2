@@ -22,9 +22,12 @@ def create_spatial_graph(n_nodes=20, radius=0.3, seed=42):
     pos = nx.get_node_attributes(G, 'pos')
     return G, pos
 
-# Generate random spanning tree from the graph for random walker
-# Does not return a graph if graph is not connected
+# NEW FUNCTION: Generate random spanning tree from the graph
 def generate_random_spanning_tree(G, seed=None):
+    """
+    Generate a random spanning tree using Wilson's algorithm for uniform distribution.
+    Returns the spanning tree as a NetworkX graph, or None if graph is not connected.
+    """
     if seed is not None:
         random.seed(seed)
     
@@ -40,9 +43,16 @@ def generate_random_spanning_tree(G, seed=None):
     
     return spanning_tree
 
-# Random walker that visits all nodes using random spanning tree
-# Returns walker_path: sequence of nodes visited + coverage_states for measuring efficiency
+# NEW FUNCTION: Random walker that visits all nodes using the spanning tree structure
 def random_walk_coverage(G, spanning_tree, start_node=None, seed=None):
+    """
+    Perform random walk that visits all nodes in the graph.
+    Uses spanning tree to ensure connectivity and random choices for direction.
+    
+    Returns:
+    - walker_path: sequence of nodes visited
+    - coverage_stats: efficiency metrics
+    """
     if seed is not None:
         random.seed(seed)
     
@@ -105,8 +115,11 @@ def random_walk_coverage(G, spanning_tree, start_node=None, seed=None):
     
     return walker_path, coverage_stats
 
-# Calculate random walker efficiency metrics
+# NEW FUNCTION: Calculate walker efficiency metrics
 def calculate_walker_efficiency(walker_path, coverage_times, revisit_counts, spatial_distances, total_nodes):
+    """
+    Calculate various efficiency metrics for the random walker.
+    """
     stats = {}
     
     # Basic coverage metrics
@@ -140,6 +153,61 @@ def calculate_walker_efficiency(walker_path, coverage_times, revisit_counts, spa
         stats['max_coverage_time'] = max(coverage_time_values)
     
     return stats
+
+# NEW FUNCTION: Use walker path to initialize information states
+def initialize_states_from_walker(G, walker_path, pb0=0.3, pn0=0.3, seed=42):
+    """
+    Initialize node states based on walker path order to simulate information spread sequence.
+    Early nodes in path are more likely to be believers (information sources).
+    """
+    if seed is not None:
+        random.seed(seed)
+    
+    states = {}
+    n_nodes = G.number_of_nodes()
+    
+    # Calculate exact numbers for each state
+    n_believers = int(pb0 * n_nodes)
+    n_non_believers = int(pn0 * n_nodes)
+    n_neutrals = n_nodes - n_believers - n_non_believers
+    
+    # Get unique nodes from walker path in order of first visit
+    unique_path = []
+    seen = set()
+    for node in walker_path:
+        if node not in seen:
+            unique_path.append(node)
+            seen.add(node)
+    
+    # Assign states with bias toward early nodes being believers (information sources)
+    all_nodes = list(G.nodes())
+    
+    # Prioritize early walker nodes as believers
+    believers = unique_path[:n_believers] if len(unique_path) >= n_believers else unique_path
+    remaining_believers = n_believers - len(believers)
+    
+    # Fill remaining believers from unvisited nodes
+    unvisited = [node for node in all_nodes if node not in unique_path]
+    if remaining_believers > 0 and unvisited:
+        additional_believers = random.sample(unvisited, min(remaining_believers, len(unvisited)))
+        believers.extend(additional_believers)
+    
+    # Assign non-believers and neutrals to remaining nodes
+    remaining_nodes = [node for node in all_nodes if node not in believers]
+    random.shuffle(remaining_nodes)
+    
+    non_believers = remaining_nodes[:n_non_believers]
+    neutrals = remaining_nodes[n_non_believers:]
+    
+    # Create states dictionary
+    for node in believers:
+        states[node] = BELIEVER
+    for node in non_believers:
+        states[node] = NON_BELIEVER
+    for node in neutrals:
+        states[node] = NEUTRAL
+    
+    return states
 
 # Initialize node states across network G w/ initial believer prop, initial non-believer prop, seed
 # Returns dictionary mapping each node to its initial state ???
@@ -323,7 +391,7 @@ def simulate_network(G, initial_states, T=50, pnb=0.1, pbn=0.05, r=1.0):
     
     return states_history, global_stats
 
-# Visualize how info spread thru network over time via spatial patterns (info clusters) + temporal patterns (global proportions)
+# UPDATED FUNCTION: Enhanced visualization to show walker path and spanning tree
 def visualize_spatial_network_evolution(G, pos, states_history, global_stats, timesteps_to_show=[0, 10, 25, 49], 
                                       walker_path=None, spanning_tree=None, coverage_stats=None):
     colors = {BELIEVER: 'blue', NON_BELIEVER: 'red', NEUTRAL: 'lightgray'}
@@ -402,8 +470,12 @@ def getUserInput():
     if n_nodes > 200:
         print("Warning: Large networks (>200 nodes) may take longer to simulate and visualize.")
     return n_nodes
-# Print random walker efficiency stats 
-def print_walker_efficiency_report(coverage_stats):  # <- This line should start at column 0
+
+# NEW FUNCTION: Print walker efficiency report
+def print_walker_efficiency_report(coverage_stats):
+    """
+    Print a detailed report of walker efficiency metrics.
+    """
     print("\n=== Random Walker Efficiency Report ===")
     print(f"Total steps taken: {coverage_stats['total_steps']}")
     print(f"Steps to full coverage: {coverage_stats['steps_to_full_coverage']}")
@@ -412,18 +484,18 @@ def print_walker_efficiency_report(coverage_stats):  # <- This line should start
     print(f"Efficiency ratio: {coverage_stats['efficiency_ratio']:.3f}")
     print(f"Total revisits: {coverage_stats['total_revisits']}")
     print(f"Backtracking ratio: {coverage_stats['backtracking_ratio']:.3f}")
-
+    
     if 'total_spatial_distance' in coverage_stats:
         print(f"Total spatial distance: {coverage_stats['total_spatial_distance']:.3f}")
         print(f"Average step distance: {coverage_stats['average_step_distance']:.3f}")
         print(f"Spatial efficiency: {coverage_stats['spatial_efficiency']:.3f}")
-
+    
     if 'mean_coverage_time' in coverage_stats:
         print(f"Mean coverage time: {coverage_stats['mean_coverage_time']:.2f}")
         print(f"Std coverage time: {coverage_stats['std_coverage_time']:.2f}")
-        print(f"Max coverage time: {coverage_stats['max_coverage_time']}") 
+        print(f"Max coverage time: {coverage_stats['max_coverage_time']}")
 
-# Main
+# What is this
 # Example usage demonstrating spatial information spread
 if __name__ == "__main__":
     print("=== Spatial Information Spread Model with Random Walker ===")
@@ -438,14 +510,14 @@ if __name__ == "__main__":
     print(f"Average clustering coefficient: {nx.average_clustering(G):.3f}")
     print(f"Number of connected components: {nx.number_connected_components(G)}")
     
-    # Generate random spanning tree and perform random walk
+    # NEW: Generate random spanning tree and perform random walk
     print(f"\nGenerating random spanning tree and performing random walk...")
     spanning_tree = generate_random_spanning_tree(G, seed=42)
     
     # Only proceed if graph is connected
     if spanning_tree is None:
         print("Cannot proceed with walker simulation. Exiting...")
-        exit()
+        return
     
     walker_path, coverage_stats = random_walk_coverage(G, spanning_tree, seed=42)
     
@@ -455,18 +527,15 @@ if __name__ == "__main__":
     # Print detailed walker efficiency report
     print_walker_efficiency_report(coverage_stats)
     
-    # MODIFIED: 
-    # # Get user input for initial proportions
-    # pb0 = float(input("Enter initial proportion of believers (e.g., 0.3): "))
-    # pn0 = float(input("Enter initial proportion of non-believers (e.g., 0.3): "))
-        
-    # Initialize information states w/ default
-    initial_states = initialize_states(G, pb0=0.3, pn0=0.3, seed=42)
+    # MODIFIED: Initialize information states using walker path
+    use_walker_initialization = input("\nUse walker path for information initialization? (y/n): ").lower().startswith('y')
     
-    print(f"Created spatial graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
-    print(f"Connection radius: 0.3")
-    print(f"Average clustering coefficient: {nx.average_clustering(G):.3f}")
-    print(f"Number of connected components: {nx.number_connected_components(G)}")
+    if use_walker_initialization:
+        initial_states = initialize_states_from_walker(G, walker_path, pb0=0.3, pn0=0.3, seed=42)
+        print("Initialized information states based on walker path (early nodes more likely to be believers)")
+    else:
+        initial_states = initialize_states(G, pb0=0.3, pn0=0.3, seed=42)
+        print("Initialized information states randomly")
     
     print(f"\nInitial information distribution:")
     counts = {BELIEVER: 0, NON_BELIEVER: 0, NEUTRAL: 0}
@@ -485,8 +554,7 @@ if __name__ == "__main__":
         r=0.5      # Strength of spatial peer pressure
     )
     
-    # Visualize spatial information spread
-    # Adjust visualization timesteps based on network size
+    # MODIFIED: Enhanced visualization with walker information
     if len(states_history) > 4:
         timesteps_to_show = [0, len(states_history)//4, len(states_history)//2, len(states_history)-1]
     else:
