@@ -9,8 +9,8 @@ $p_{n, t} = p_{n, t-1} + (p_{bn} \cdot Max[(p_{n, t-1}-p_{b, t-1}), 0] \cdot p_{
 
 ## Description
 
-Right now, just outputs a single random undirected graph using NetworkX at 4 different time w/ proportions of believers, non-believers, and neutrals displayed over time. 
-Next steps: 
+Right now, outputs a single random undirected graph using NetworkX at 4 different time w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
+Next steps?? <br>
 - implementing random walker time
 - dropdowns for changing seed which essentially changes network topology - seed is for reproducibility of random experiments
 - changing initial proportion values
