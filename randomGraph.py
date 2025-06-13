@@ -10,6 +10,7 @@ NON_BELIEVER = 1
 NEUTRAL = 2       
 
 # Create random geometric graph: place N nodes randomly in [0, 1]x[0, 1] square, connect any 2 nodes whose Euclidean distance ≤ radius: spatial clustering
+# Uses default values
 def create_spatial_graph(n_nodes=20, radius=0.3, seed=42):
     # Set random seed for reproducible node positions and connections ???
     if seed is not None:
@@ -245,6 +246,12 @@ def visualize_spatial_network_evolution(G, pos, states_history, global_stats, ti
     plt.tight_layout()
     plt.show()
 
+# Allow user to input # of nodes to dynamically change graph
+def getUserInput():
+    n_nodes = int(input("Enter the number of nodes for the network (e.g., 20, 50, 100): "))
+    if n_nodes > 200:
+        print("Warning: Large networks (>200 nodes) may take longer to simulate and visualize.")
+    return n_nodes
 
 # What is this
 # Example usage demonstrating spatial information spread
@@ -255,8 +262,9 @@ if __name__ == "__main__":
     # Create spatial network
     # Smaller radius = more isolated clusters, slower global spread
     # Larger radius = more connections, faster global spread  
-    G, pos = create_spatial_graph(n_nodes=20, radius=0.3, seed=42)
-    
+    n_nodes = getUserInput()
+    G, pos = create_spatial_graph(n_nodes=n_nodes, radius=0.3, seed=42)
+        
     # Initialize information states
     initial_states = initialize_states(G, pb0=0.3, pn0=0.3, seed=42)
     
@@ -283,7 +291,12 @@ if __name__ == "__main__":
     )
     
     # Visualize spatial information spread
-    visualize_spatial_network_evolution(G, pos, states_history, global_stats)
+    # Adjust visualization timesteps based on network size
+    if len(states_history) > 4:
+        timesteps_to_show = [0, len(states_history)//4, len(states_history)//2, len(states_history)-1]
+    else:
+        timesteps_to_show = list(range(len(states_history)))
+    visualize_spatial_network_evolution(G, pos, states_history, global_stats, timesteps_to_show)
     
     # Analyze final spatial information distribution
     final_stats = global_stats[-1]
