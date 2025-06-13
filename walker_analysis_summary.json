@@ -1,0 +1,14 @@
+{
+  "10": {
+    "success_rate": 0,
+    "n_successful": 0
+  },
+  "20": {
+    "success_rate": 0.2,
+    "n_successful": 2,
+    "n_total": 10,
+    "metrics": {
+      "n_edges": {
+        "mean": 38.0,
+        "std": 3.0,
+        "min": 
