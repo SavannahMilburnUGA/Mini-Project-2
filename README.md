@@ -13,11 +13,12 @@ $p_{neutral, t} = 1 - p_{b, t} - p_{n, t}$
 
 CURRENT: outputs a single random undirected graph using NetworkX at different time steps w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
 Also generates a random spanning tree and performs random walk on spanning tree if graph is connected & outputs random walker efficiency metrics. <br>
+Performs analysis of 10 trials for each node count of 10, 20, 30, 50, 75, 100. <br>
 Next steps?? <br>
-- Fix initial graph to be connected.
-- changing initial proportion values
-- dropdowns for changing seed which essentially changes network topology - seed is for reproducibility of random experiments
-- changing rate
+- Input for changing initial proportion values
+- Input for changing seed which essentially changes network topology - seed is for reproducibility of random experiments
+- Input for changing connection radius
+- Input for changing rate
 
 ## References
 We acknowledge the use of AI in generating code. 
