@@ -11,7 +11,8 @@ $p_{neutral, t} = 1 - p_{b, t} - p_{n, t}$
 
 ## Description
 
-Right now, outputs a single random undirected graph using NetworkX at different time steps w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
+CURRENT: outputs a single random undirected graph using NetworkX at different time steps w/ proportions of believers, non-believers, and neutrals displayed over time based on user inputted # of nodes. <br>
+Also generates a random spanning tree and performs random walk on spanning tree if graph is connected & outputs random walker efficiency metrics. <br>
 Next steps?? <br>
 - Fix initial graph to be connected.
 - changing initial proportion values
