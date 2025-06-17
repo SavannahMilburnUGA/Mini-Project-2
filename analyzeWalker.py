@@ -5,16 +5,12 @@ import time
 import json
 from collections import defaultdict
 import seaborn as sns
-
-# Import all functions from your main file
-# Assuming your main file is named 'randomGraph.py'
+# Import from randomGraph file - random network and random spanning tree
 from randomGraph import *
 
+# Run a single trial of random walker analysis. 
+# Returns a dictionary or none if failed. 
 def run_single_trial(n_nodes, radius=0.3, seed=None):
-    """
-    Run a single trial of walker efficiency analysis.
-    Returns dictionary with all metrics or None if failed.
-    """
     try:
         # Create spatial graph
         G, pos = create_spatial_graph(n_nodes=n_nodes, radius=radius, seed=seed)
@@ -74,23 +70,13 @@ def run_single_trial(n_nodes, radius=0.3, seed=None):
             'success': False,
             'error': str(e)
         }
-
+        
+# Run random walker analysis on different node counts w/ 10 trials
+# Returns nested dictionary based on node count and trial number
 def run_walker_efficiency_analysis(node_counts=[10, 20, 30, 50, 75, 100], 
-                                 n_trials=20, 
+                                 n_trials=10, 
                                  radius=0.3,
                                  base_seed=42):
-    """
-    Run comprehensive walker efficiency analysis across different network sizes.
-    
-    Args:
-        node_counts: List of node counts to test
-        n_trials: Number of trials per node count
-        radius: Connection radius for spatial graphs
-        base_seed: Base seed for reproducibility
-    
-    Returns:
-        Nested dictionary: {node_count: {trial_number: {metrics...}}}
-    """
     print("=== Random Walker Efficiency Analysis ===")
     print(f"Testing node counts: {node_counts}")
     print(f"Trials per node count: {n_trials}")
@@ -139,13 +125,8 @@ def run_walker_efficiency_analysis(node_counts=[10, 20, 30, 50, 75, 100],
     
     return results
 
+# Calculate summary stats from trials
 def calculate_summary_statistics(results):
-    """
-    Calculate summary statistics from trial results.
-    
-    Returns:
-        Dictionary with summary stats for each node count
-    """
     summary = {}
     
     for n_nodes, trials in results.items():
@@ -186,10 +167,8 @@ def calculate_summary_statistics(results):
     
     return summary
 
+# Create 6 visualizations based on random walker
 def visualize_walker_efficiency(summary_stats, save_plots=True):
-    """
-    Create comprehensive visualizations of walker efficiency analysis.
-    """
     # Extract data for plotting
     node_counts = sorted([n for n in summary_stats.keys() 
                          if summary_stats[n]['success_rate'] > 0])
@@ -309,10 +288,8 @@ def visualize_walker_efficiency(summary_stats, save_plots=True):
     
     return scaling_exponent
 
+# Save 6 visualizations to files
 def save_results(results, summary_stats, filename_prefix='walker_analysis'):
-    """
-    Save results to files for later analysis.
-    """
     # Save raw results as JSON
     with open(f'{filename_prefix}_raw_results.json', 'w') as f:
         json.dump(results, f, indent=2)
@@ -348,10 +325,8 @@ def save_results(results, summary_stats, filename_prefix='walker_analysis'):
     print(f"  - Summary: {filename_prefix}_summary.json")
     print(f"  - CSV: {filename_prefix}_summary.csv")
 
+# Print analysis report
 def print_analysis_report(summary_stats, scaling_exponent):
-    """
-    Print a comprehensive analysis report.
-    """
     print("\n" + "="*60)
     print("RANDOM WALKER EFFICIENCY ANALYSIS REPORT")
     print("="*60)
@@ -385,11 +360,8 @@ def print_analysis_report(summary_stats, scaling_exponent):
     print(f"  Scaling interpretation: {scaling_desc}")
     print("="*60)
 
+# Main to run random walker analysis
 def main():
-    """
-    Main analysis function - run the complete walker efficiency study.
-    """
-    # Configuration
     node_counts = [10, 20, 30, 50, 75, 100]  # Adjust based on your computational resources
     n_trials = 10
     radius = 0.3
